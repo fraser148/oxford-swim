@@ -108,7 +108,7 @@ async function getData() {
                 client_id: clientID,
                 client_secret: clientSecret
             },
-            // cache: 'no-store',
+            cache: 'no-store',
         });
         const data = await res.json();
         let temp_dumps = data.items
