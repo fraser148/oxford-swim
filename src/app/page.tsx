@@ -1,25 +1,8 @@
 import { ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import LayeredWaves from '../components/LayeredWaves'
-
-interface dump {
-    LocationName: string,
-    PermitNumber: string,
-    LocationGridRef: string,
-    X: number,
-    Y: number,
-    ReceivingWaterCourse: string,
-    StartDateTime: Date,
-    EndDateTime: Date,
-    Duration: number,
-    Ongoing: boolean
-}
-
-interface location {
-    name: string,
-    distance: number,
-    severity: number,
-    dumps: dump[]
-}
+import { upstream_locations } from '../data/locations';
+import type { dump, location } from '../data/locations';
+import Link from 'next/link';
 
 function compare( a: location, b: location ) {
     if ( a.distance < b.distance ){
@@ -33,51 +16,6 @@ function compare( a: location, b: location ) {
 
 async function getData() {
     let url = "https://prod-tw-opendata-app.uk-e1.cloudhub.io/data/STE/v1/DischargeAlerts"
-
-    const upstream_locations : location[] = [
-        {
-            name: "Cassington",
-            distance: 4.7,
-            severity: 5,
-            dumps: []
-        },
-        {
-            name: "Stanton Harcourt",
-            distance: 6.3,
-            severity: 2,
-            dumps: []
-        },
-        {
-            name: "South Leigh",
-            distance: 7.8,
-            severity: 1,
-            dumps: []
-        },
-        {
-            name: "Standlake",
-            distance: 7.6,
-            severity: 3,
-            dumps: []
-        },
-        {
-            name: "Woodstock",
-            distance: 7.8,
-            severity: 4,
-            dumps: []
-        },
-        {
-            name: "Combe",
-            distance: 8.7,
-            severity: 1,
-            dumps: []
-        },
-        {
-            name: "Church Hanborough",
-            distance: 7.0,
-            severity: 2,
-            dumps: []
-        }
-    ]
 
     const clientID = process.env.TW_CLIENT_ID || "";
     const clientSecret = process.env.TW_CLIENT_SECRET || "";
@@ -108,7 +46,7 @@ async function getData() {
                 client_id: clientID,
                 client_secret: clientSecret
             },
-            cache: 'no-store',
+            // cache: 'no-store',
         });
         const data = await res.json();
         let temp_dumps = data.items
@@ -118,45 +56,39 @@ async function getData() {
         // console.log(new Date(temp_dumps[0].DateTime))
         // console.log(new Date(temp_dumps[0].DateTime).toLocaleString("en-GB", {timeZone: "Europe/London"}))
         // console.log(new Date(temp_dumps[0].DateTime).getTimezoneOffset())
-
-
+        let ongoing = false;
+        let start = new Date();
+        let end = new Date();
+        let duration = 0;
         for (let j=0; j < temp_dumps.length; j++) {
+            ongoing = false;
             if (temp_dumps[j].AlertType == "Start") {
-                let start = new Date(temp_dumps[j].DateTime);
-                let end = new Date();
-                let duration = Math.abs(start.getTime() - end.getTime()) / 36e5;
-                real_dumps.push({
-                    LocationName: temp_dumps[j].LocationName,
-                    PermitNumber: temp_dumps[j].PermitNumber,
-                    LocationGridRef: temp_dumps[j].LocationnGridRef,
-                    X: temp_dumps[j].X,
-                    Y: temp_dumps[j].Y,
-                    ReceivingWaterCourse: temp_dumps[j].ReceivingWaterCourse,
-                    StartDateTime: new Date(temp_dumps[j].DateTime),
-                    EndDateTime: new Date(temp_dumps[j].DateTime),
-                    Duration: duration,
-                    Ongoing: true
-                })
+                start = new Date(temp_dumps[j].DateTime);
+                end = new Date();
+                duration = Math.abs(start.getTime() - end.getTime()) / 36e5;
+                ongoing = true;
             }
 
             if (temp_dumps[j].AlertType == "Stop") {
-                let start = new Date(temp_dumps[j+1].DateTime);
-                let end = new Date(temp_dumps[j].DateTime);
-                let duration = Math.abs(start.getTime() - end.getTime()) / 36e5;
-                real_dumps.push({
-                    LocationName: temp_dumps[j].LocationName,
-                    PermitNumber: temp_dumps[j].PermitNumber,
-                    LocationGridRef: temp_dumps[j].LocationnGridRef,
-                    X: temp_dumps[j].X,
-                    Y: temp_dumps[j].Y,
-                    ReceivingWaterCourse: temp_dumps[j].ReceivingWaterCourse,
-                    StartDateTime: new Date(temp_dumps[j+1].DateTime),
-                    EndDateTime: new Date(temp_dumps[j].DateTime),
-                    Duration: duration,
-                    Ongoing: false
-                })
+                start = new Date(temp_dumps[j+1].DateTime);
+                end = new Date(temp_dumps[j].DateTime);
+                duration = Math.abs(start.getTime() - end.getTime()) / 36e5;
+                // Assume that the next alert is a start alert
                 j += 1;
             }
+            
+            real_dumps.push({
+                LocationName: temp_dumps[j].LocationName,
+                PermitNumber: temp_dumps[j].PermitNumber,
+                LocationGridRef: temp_dumps[j].LocationnGridRef,
+                X: temp_dumps[j].X,
+                Y: temp_dumps[j].Y,
+                ReceivingWaterCourse: temp_dumps[j].ReceivingWaterCourse,
+                StartDateTime: start,
+                EndDateTime: end,
+                Duration: duration,
+                Ongoing: ongoing
+            })
         }
         
         upstream_locations[i].dumps = real_dumps;
@@ -200,7 +132,7 @@ const Location = ({most_recent_dump, time_elapsed_since_last_dump} : {most_recen
     }
 
     return (
-        <div className={"bg-gradient-to-l shadow-lg  text-white p-6 max-w-md my-4 rounded-lg relative" + color}>
+        <div className={"bg-gradient-to-l shadow-lg text-white p-6 max-w-md my-4 rounded-lg relative" + color}>
             <h2 className="text-3xl font-bold text-center">Port Meadow</h2>
             {most_recent_dump.Ongoing &&
                 <div className='absolute -top-3 -right-3'>
@@ -235,12 +167,12 @@ export default async function Home() {
     let {upstream_locations, most_recent_dump, time_elapsed_since_last_dump} = await getData();
 
     return (
-        <main className="flex min-h-screen flex-col justify-between items-center p-0">
-            <div className='p-6 border-b border-slate-400 w-full'>
-                <h1 className="text-4xl font-bold text-center">Oxford Swim Discharge Watch</h1>
+        <main className="flex min-h-screen flex-col justify-between items-center p-0 bg-slate-50">
+            <div className='p-6 w-full bg-slate-200 shadow-sm'>
+                <h1 className="text-4xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-l from-cyan-500 to-blue-500">Oxford Swim Discharge Watch</h1>
                 <h3 className="font-light text-center">Check the last time there was a discharge upstream of your location.</h3>
             </div>
-            <div className='font-light max-w-6xl w-full py-6 px-6'>
+            <div className='font-light py-6 px-6'>
                 <div className='flex gap-4 flex-col justify-center items-center'>
                     <Location
                         most_recent_dump={most_recent_dump}
@@ -252,24 +184,27 @@ export default async function Home() {
                     /> */}
                 </div>
             </div>
-            <div className="flex flex-col gap-2 p-6 max-w-full">
-                <div className='p-4 border rounded-md border-slate-400 flex gap-4'>
+            <div className="flex flex-col gap-2 p-6 items-center">
+                <div className='px-8 py-4 border max-w-md w-full rounded-md shadow-lg bg-white flex flex-row items-center justify-between gap-4'>
                     <div>
-                        <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
+                        <ExclamationTriangleIcon className="w-10 h-10 text-red-600 hover:animate-spin" />
+                    </div>
+                    <div className="text-center">
+                        <h3 className="text-2xl font-semibold">Most Recent Dump</h3>
+                        <h4 className='text-xl font-light mb-3'>@ {most_recent_dump.LocationName}</h4>
+                        <p><span className="font-semibold">Started at: </span> {most_recent_dump.StartDateTime.toLocaleString("en-GB")}</p>
+                        <p><span className="font-semibold">Ended at: </span> {most_recent_dump.EndDateTime.toLocaleString("en-GB")}</p>
+                        <p><span className="font-semibold">Duration: </span> {most_recent_dump.Duration} hours</p>
                     </div>
                     <div>
-                        <h3 className="text-2xl font-semibold">Most recent dump</h3>
-                        <h4 className='text-xl font-light mb-3'>@{most_recent_dump.LocationName}</h4>
-                        <p>Started at: {most_recent_dump.StartDateTime.toLocaleString("en-GB")}</p>
-                        <p>Ended at: {most_recent_dump.EndDateTime.toLocaleString("en-GB")}</p>
-                        <p>Duration: {most_recent_dump.Duration} hours</p>
+                        <ExclamationTriangleIcon className="w-10 h-10 text-red-600 hover:animate-spin" />
                     </div>
                 </div>
                 <h2 className="text-4xl font-semibold text-center my-5">Upstream Locations</h2>
                     {upstream_locations.length == 0 && <ArrowPathIcon className="w-6 h-6 text-blue-900 animate-spin" />}
                     <div className="overflow-x-auto rounded-lg shadow-lg">
-                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <table className="w-full text-sm text-left text-slate-500 dark:text-slate-400 table-auto">
+                        <thead className="text-xs text-slate-700 uppercase bg-slate-100 dark:bg-slate-700 dark:text-slate-400">
                             <tr>
                                 <th scope="col" className="px-6 py-3">
                                     Location Name
@@ -290,9 +225,11 @@ export default async function Home() {
                         </thead>
                         <tbody>
                             {upstream_locations.map((location) => (
-                                <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700" key={location.name}>
-                                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {location.name}
+                                <tr className="bg-white border-b dark:bg-slate-800 dark:border-slate-700" key={location.name}>
+                                    <th scope="row" className="px-6 py-4 font-medium text-slate-900 whitespace-nowrap dark:text-white">
+                                        <Link href={`/locations/${location.name}`} className='hover:underline cursor-pointer'>
+                                            {location.name}
+                                        </Link>
                                     </th>
                                     <td className="px-6 py-4">
                                     {location.dumps[0].Ongoing  ?
