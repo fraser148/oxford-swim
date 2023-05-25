@@ -1,9 +1,12 @@
 import { Header } from "@/src/components/Header";
 import LayeredWaves from "@/src/components/LayeredWaves";
-import { upstream_locations } from "@/src/data/locations";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
 import Link from "next/link";
+
+export const metadata = {
+  title: 'About | Oxford Swim Discharge Watch',
+  description: 'Check the last time there was a discharge upstream of your location.',
+}
 
 export default function Page() {
   return (
