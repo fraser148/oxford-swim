@@ -2,6 +2,7 @@ import { ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroic
 import LayeredWaves from '../components/LayeredWaves'
 import { upstream_locations } from '../data/locations';
 import type { dump, location } from '../data/locations';
+import { Header } from '../components/Header';
 import Link from 'next/link';
 
 function compare( a: location, b: location ) {
@@ -51,6 +52,10 @@ async function getData() {
         const data = await res.json();
         let temp_dumps = data.items
         let real_dumps = []
+
+        if (!temp_dumps) {
+            continue;
+        }
 
 
         // console.log(new Date(temp_dumps[0].DateTime))
@@ -168,24 +173,15 @@ export default async function Home() {
 
     return (
         <main className="flex min-h-screen flex-col justify-between items-center p-0 bg-slate-50">
-            <div className='p-6 w-full bg-slate-200 shadow-sm'>
-                <h1 className="text-4xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-l from-cyan-500 to-blue-500">Oxford Swim Discharge Watch</h1>
-                <h3 className="font-light text-center">Check the last time there was a discharge upstream of your location.</h3>
-            </div>
+            <Header />
             <div className='font-light py-6 px-6'>
                 <div className='flex gap-4 flex-col justify-center items-center'>
                     <Location
                         most_recent_dump={most_recent_dump}
                         time_elapsed_since_last_dump={time_elapsed_since_last_dump}
                     />
-                    {/* <Location
-                        most_recent_dump={most_recent_dump}
-                        time_elapsed_since_last_dump={time_elapsed_since_last_dump}
-                    /> */}
                 </div>
-            </div>
-            <div className="flex flex-col gap-2 p-6 items-center">
-                <div className='px-8 py-4 border max-w-md w-full rounded-md shadow-lg bg-white flex flex-row items-center justify-between gap-4'>
+                <div className='px-8 py-4 border max-w-md w-full rounded-md shadow-lg bg-white flex flex-col sm:flex-row items-center justify-between gap-4'>
                     <div>
                         <ExclamationTriangleIcon className="w-10 h-10 text-red-600 hover:animate-spin" />
                     </div>
@@ -200,7 +196,10 @@ export default async function Home() {
                         <ExclamationTriangleIcon className="w-10 h-10 text-red-600 hover:animate-spin" />
                     </div>
                 </div>
-                <h2 className="text-4xl font-semibold text-center my-5">Upstream Locations</h2>
+            </div>
+            <div className="flex flex-col gap-2 p-6 max-w-full ">
+                <h2 className="text-4xl font-semibold text-center mt-5">Upstream Locations</h2>
+                <h4 className="m-auto font-light text-center mb-5 max-w-md margin-auto">These locations have been picked from the <a className='underline text-blue-500 font-medium visited:text-purple-700' href={"https://www.thameswater.co.uk/edm-map"}>Thames Water Storm Discharge Map.</a> They are observed to affect the locations listed above.</h4>
                     {upstream_locations.length == 0 && <ArrowPathIcon className="w-6 h-6 text-blue-900 animate-spin" />}
                     <div className="overflow-x-auto rounded-lg shadow-lg">
                     <table className="w-full text-sm text-left text-slate-500 dark:text-slate-400 table-auto">
