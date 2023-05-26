@@ -197,11 +197,6 @@ export default async function Home() {
                     </div>
                 </div>
             </div>
-            <div className='flex flex-col gap-2 p-6 max-w-md'>
-                <Link href="/about">
-                    <span className='text-center bg-gradient-to-r to-cyan-500 from-blue-500 font-medium shadow-lg rounded-full px-10 py-4 text-white text-lg'>About this project</span>
-                </Link>
-            </div>
             <div className="flex flex-col gap-2 p-6 max-w-full ">
                 <h2 className="text-4xl font-semibold text-center mt-5">Upstream Locations</h2>
                 <h4 className="m-auto font-light text-center mb-5 max-w-md margin-auto">These locations have been picked from the <a className='underline text-blue-500 font-medium visited:text-purple-700' href={"https://www.thameswater.co.uk/edm-map"}>Thames Water Storm Discharge Map.</a> They are observed to affect the locations listed above.</h4>
@@ -260,6 +255,11 @@ export default async function Home() {
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div className='flex flex-col gap-2 p-6 max-w-md'>
+                <Link href="/about">
+                    <span className='text-center bg-gradient-to-r to-cyan-500 from-blue-500 font-medium shadow-lg rounded-full px-10 py-4 text-white text-lg'>About this project</span>
+                </Link>
             </div>
             <LayeredWaves />
         </main>
