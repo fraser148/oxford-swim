@@ -45,9 +45,12 @@ async function getData() {
         const res = await fetch(new_url, {
             headers: {
                 client_id: clientID,
-                client_secret: clientSecret
+                client_secret: clientSecret,
             },
-            cache: 'no-store',
+            // cache: 'no-store',
+            next: {
+                revalidate: 300 // Cache for 5mins
+            }
         });
         const data = await res.json();
         let temp_dumps = data.items
