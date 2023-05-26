@@ -47,7 +47,7 @@ async function getData() {
                 client_id: clientID,
                 client_secret: clientSecret
             },
-            cache: 'no-store',
+            // cache: 'no-store',
         });
         const data = await res.json();
         let temp_dumps = data.items
@@ -172,7 +172,7 @@ export default async function Home() {
     let {upstream_locations, most_recent_dump, time_elapsed_since_last_dump} = await getData();
 
     return (
-        <main className="flex min-h-screen flex-col justify-between items-center p-0 bg-slate-50">
+        <main className="flex min-h-screen flex-col justify-between items-center p-0 bg-slate-50 dark:bg-slate-900">
             <Header />
             <div className='font-light py-6 px-6'>
                 <div className='flex gap-4 flex-col justify-center items-center'>
@@ -181,7 +181,7 @@ export default async function Home() {
                         time_elapsed_since_last_dump={time_elapsed_since_last_dump}
                     />
                 </div>
-                <div className='px-8 py-4 border max-w-md w-full rounded-md shadow-lg bg-white flex flex-col sm:flex-row items-center justify-between gap-4'>
+                <div className='px-8 py-4 border max-w-md w-full rounded-md shadow-lg bg-white flex flex-col sm:flex-row items-center justify-between gap-4 dark:bg-slate-800'>
                     <div>
                         <ExclamationTriangleIcon className="w-10 h-10 text-red-600 hover:animate-spin" />
                     </div>

@@ -10,14 +10,14 @@ export const metadata = {
 
 export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col justify-between items-center p-0 bg-slate-50">
+    <main className="flex min-h-screen flex-col justify-between items-center p-0 bg-slate-50 dark:bg-slate-900">
         <Header />
         <div className="flex flex-col items-center my-4 p-4">
             <div className="flex flex-col max-w-lg w-full my-5 overflow-hidden">
                 <Link href="/">
-                    <ArrowUturnLeftIcon className="h-8 w-8  text-gray-800 rounded-full hover:bg-blue-500 hover:text-white p-1 transition cursor-pointer"/>
+                    <ArrowUturnLeftIcon className="h-8 w-8  text-gray-800 rounded-full hover:bg-blue-500 hover:text-white p-1 transition cursor-pointer dark:text-white"/>
                 </Link>
-                <h1 className="text-xl font-bold text-gray-800">About:</h1>
+                <h1 className="text-xl font-bold text-gray-800 dark:text-white">About:</h1>
                 <h1 className="text-6xl md:text-8xl pb-2 mt-6 font-bold text-center text-transparent bg-clip-text bg-gradient-to-l from-lime-700 to-yellow-900">372,533</h1>
                 <h4 className="font-light text-center">dumps of <span className="font-semibold">raw sewage</span> into our rivers in 2021 </h4>
                 <h1 className="text-6xl md:text-8xl pb-2 mt-12 font-bold text-center text-transparent bg-clip-text bg-gradient-to-l from-lime-700 to-yellow-900">2.75m+</h1>

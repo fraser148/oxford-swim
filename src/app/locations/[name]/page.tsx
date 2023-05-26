@@ -15,14 +15,14 @@ export default function Page({ params } : { params: { name: string } }) {
   let { name } = params;
   name = decodeURIComponent(name);
   return (
-    <main className="flex min-h-screen flex-col justify-between items-center p-0 bg-slate-50">
+    <main className="flex min-h-screen flex-col justify-between items-center p-0 bg-slate-50 dark:bg-slate-900">
         <Header />
         <div className="flex flex-col items-center my-4 p-4">
             <div className="flex flex-col max-w-md w-full my-5">
                 <Link href="/">
-                    <ArrowUturnLeftIcon className="h-8 w-8 -ml-2 text-gray-800 rounded-full hover:bg-blue-500 hover:text-white p-1 transition cursor-pointer"/>
+                    <ArrowUturnLeftIcon className="h-8 w-8 -ml-2 text-gray-800 rounded-full hover:bg-blue-500 dark:text-white hover:text-white p-1 transition cursor-pointer"/>
                 </Link>
-                <h1 className="text-xl font-bold text-gray-800">Location:</h1>
+                <h1 className="text-xl font-bold text-gray-800 dark:text-white">Location:</h1>
                 <h1 className="text-3xl font-extralight">{name}</h1>
             </div>
             <div className="flex max-w-md w-full rounded-md shadow-lg overflow-hidden">
