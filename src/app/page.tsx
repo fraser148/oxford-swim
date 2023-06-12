@@ -1,4 +1,4 @@
-import { ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import LayeredWaves from '../components/LayeredWaves'
 import { upstream_locations } from '../data/locations';
 import type { dump, location } from '../data/locations';
@@ -163,8 +163,16 @@ const Location = ({most_recent_dump, time_elapsed_since_last_dump} : {most_recen
                     time_elapsed_since_last_dump.days} day{time_elapsed_since_last_dump.days > 1 && <span>s</span>} and {time_elapsed_since_last_dump.hours} hour{time_elapsed_since_last_dump.hours > 1 && <span>s</span>}</h4>
                     <h4 className='text-center'>since the last dump</h4>
                 </div>
+                {time_elapsed_since_last_dump.days < 4 ?
+                <>
+                <XCircleIcon className='mx-auto h-16 w-16 mb-8 text-white-600' />
+                <p className='text-light'>It is not safe to enter the river.</p>
+                </>:
+                <>
                 <CheckCircleIcon className='mx-auto h-16 w-16 mb-8 text-white-600' />
                 <p className='text-light'>It should be safe to swim in this location now. Always check the river before entering.</p>
+                </>
+                }
                 </>
             }
         </div>
